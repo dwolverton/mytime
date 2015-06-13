@@ -112,7 +112,7 @@ div.dayslist {
 
 
 div.timegrid {
-	width: 300px;
+	width: 600px;
 	font-family: sans-serif;
 	color: #333;
 }
@@ -145,6 +145,10 @@ div.timegrid {
 			text-align: right;
 			width: 4.2em;
 		}
+
+    .timegrid tbody tr {
+        height: 40px;
+    }
 	
 	.timegrid th, .timegrid td {
 		border: 1px solid black;
@@ -224,14 +228,14 @@ div.timegrid {
 	
 			.timegrid .start {
 				border-left-style: solid;
-				border-top-left-radius: .5em;
-				border-bottom-left-radius: .5em;
+				border-top-left-radius: 1em;
+				border-bottom-left-radius: 1em;
 			}
 	
 			.timegrid .end {
 				border-right-style: solid;
-				border-top-right-radius: .5em;
-				border-bottom-right-radius: .5em;
+				border-top-right-radius: 1em;
+				border-bottom-right-radius: 1em;
 			}
 
             .timegrid .time-bar.selected {

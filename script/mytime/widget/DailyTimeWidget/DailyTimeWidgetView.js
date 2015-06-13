@@ -75,7 +75,9 @@ function (declare,
         },
 
         _getLabelForHour: function(hour) {
-            if (hour < 12) {
+            if (hour == 0) {
+                return "12:00 am";
+            } else if (hour < 12) {
                 return hour + ":00 am";
             } else if (hour == 12) {
                 return hour + ":00 pm";
