@@ -270,7 +270,7 @@ function (declare,
                 }
                 i++;
             }
-            this._setTextOnTimeBars(timeBars, timeEntry.code);
+            this._setTextOnTimeBars(timeBars, timeEntry.description);
         },
 
         _buildTimeBarsForTimeEntry: function(timeEntry) {
@@ -280,7 +280,7 @@ function (declare,
                 timeBars.push(timebar);
                 this._placeTimeBar(timebar, slot.hour);
             }, this);
-            this._setTextOnTimeBars(timeBars, timeEntry.code);
+            this._setTextOnTimeBars(timeBars, timeEntry.description);
         },
 
         _placeTimeBar: function(timebar, hour) {
@@ -372,6 +372,14 @@ function (declare,
                     markNode.parentNode.removeChild(markNode);
                 }
             }
+        },
+
+        _clickPrevDay: function() {
+            this.emit('prevDay')
+        },
+
+        _clickNextDay: function() {
+            this.emit('nextDay')
         }
     });
 });

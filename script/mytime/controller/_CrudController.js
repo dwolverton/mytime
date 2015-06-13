@@ -48,18 +48,19 @@ define([
             if (!this.store) {
                 command.reject(this._getCommandError("Cannot add {} before system is initialized."));
             } else {
-                var entry = new this.objectTypeConstructor(command[this.commandObjectProperty]);
-                entry.set("id", IdGenerator.nextIdForType(this.objectTypeName));
+                var object = new this.objectTypeConstructor(command[this.commandObjectProperty]);
+                object.set("id", IdGenerator.nextIdForType(this.objectTypeName));
 
-                this._beforeCreate(command, entry);
+                this._beforeCreate(command, object);
                 if (command.isFulfilled()) {
                     return;
                 }
 
-                console.log("PUT NEW " + JSON.stringify(entry));
-                this.store.put(entry);
-                command.resolve(this._getCommandResult(entry));
+                console.log("PUT NEW " + JSON.stringify(object));
+                this.store.put(object);
+                command.resolve(this._getCommandResult(object));
                 this._persistStore();
+                this._afterCreate(command, object);
             }
         },
 
@@ -68,10 +69,19 @@ define([
          * resolve or reject the command.
          *
          * @param {Object} command
-         * @param {Object} entry new object about to be created. an instance of objectTypeConstructor
+         * @param {Object} object new object about to be created. an instance of objectTypeConstructor
          * @private
          */
-        _beforeCreate: function(command, entry) {},
+        _beforeCreate: function(command, object) {},
+
+        /**
+         * Override this to extend behavior. Called after creating a new object.
+         *
+         * @param {Object} command
+         * @param {Object} object new object created. an instance of objectTypeConstructor
+         * @private
+         */
+        _afterCreate: function(command, object) {},
 
         handleUpdate: function(command) {
             if (!this.store) {
@@ -79,22 +89,23 @@ define([
             } else {
                 var updateObject = command[this.commandObjectProperty];
                 var id = updateObject.id;
-                var existingEntry = this.store.get(id);
-                if (!existingEntry) {
+                var existingObject = this.store.get(id);
+                if (!existingObject) {
                     command.reject(this._getCommandError("Cannot update {}. It does not exist."));
                     return;
                 }
 
-                this._beforeUpdate(command, existingEntry);
+                this._beforeUpdate(command, existingObject);
                 if (command.isFulfilled()) {
                     return;
                 }
 
-                existingEntry.updateFrom(updateObject);
-                console.log("PUT " + JSON.stringify(existingEntry));
-                this.store.put(existingEntry);
-                command.resolve(this._getCommandResult(existingEntry));
+                existingObject.updateFrom(updateObject);
+                console.log("PUT " + JSON.stringify(existingObject));
+                this.store.put(existingObject);
+                command.resolve(this._getCommandResult(existingObject));
                 this._persistStore();
+                this._afterUpdate(command, existingObject);
             }
         },
 
@@ -103,31 +114,41 @@ define([
          * or reject the command.
          *
          * @param command
-         * @param existingEntry the entry from the store before updates are applied
+         * @param existingObject the object from the store before updates are applied
          * @private
          */
-        _beforeUpdate: function(command, existingEntry) {},
+        _beforeUpdate: function(command, existingObject) {},
+
+        /**
+         * Override this to extend behavior. Called after updating an object.
+         *
+         * @param {Object} command
+         * @param {Object} object in the store after updates made. an instance of objectTypeConstructor
+         * @private
+         */
+        _afterUpdate: function(command, object) {},
 
         handleDelete: function(command) {
             if (!this.store) {
                 command.reject(this._getCommandError("Cannot delete {} before system is initialized."));
             } else {
                 var id = command[this.commandIdProperty];
-                var existingEntry = this.store.get(id);
-                if (!existingEntry) {
+                var existingObject = this.store.get(id);
+                if (!existingObject) {
                     command.reject(this._getCommandError("Cannot delete {}. It does not exist."));
                     return;
                 }
 
-                this._beforeDelete(command, existingEntry);
+                this._beforeDelete(command, existingObject);
                 if (command.isFulfilled()) {
                     return;
                 }
 
-                console.log("REMOVE " + JSON.stringify(existingEntry));
+                console.log("REMOVE " + JSON.stringify(existingObject));
                 this.store.remove(id);
-                command.resolve(this._getCommandResult(existingEntry, id));
+                command.resolve(this._getCommandResult(existingObject, id));
                 this._persistStore();
+                this._afterDelete(command, existingObject);
             }
         },
 
@@ -136,10 +157,19 @@ define([
          * or reject the command.
          *
          * @param command
-         * @param existingEntry the entry from the store that will be deleted.
+         * @param existingObject the object from the store that will be deleted.
          * @private
          */
-        _beforeDelete: function(command, existingEntry) {},
+        _beforeDelete: function(command, existingObject) {},
+
+        /**
+         * Override this to extend behavior. Called after deleting an object.
+         *
+         * @param {Object} command
+         * @param {Object} object that was removed from the store. an instance of objectTypeConstructor
+         * @private
+         */
+        _afterDelete: function(command, existingObject) {},
 
         _getCommandResult: function(object, id) {
             var result = {};

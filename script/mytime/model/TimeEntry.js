@@ -8,7 +8,7 @@ define([
         "mytime/model/_ModelBase"
 ], function (module, declare, _ModelBase) {
     return declare(module.id, [_ModelBase], {
-        _propertyNames: ["id", "date", "startHour", "endHour", "text", "taskId"],
+        _propertyNames: ["id", "date", "startHour", "endHour", "text", "taskId", "integrations"],
 
         id: null,
         date: null,
@@ -16,6 +16,7 @@ define([
         endHour: null,
 
         text: null,
-        taskId: null
+        taskId: null,
+        integrations: null
     });
 });

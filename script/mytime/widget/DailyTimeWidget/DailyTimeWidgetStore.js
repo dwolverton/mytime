@@ -48,7 +48,7 @@ define([
                 var task = this.taskStore.get(timeEntry.taskId);
                 if (task) {
                     timeEntry.color = task.color;
-                    timeEntry.code = task.code;
+                    timeEntry.description = task.description;
                 }
             }
             return timeEntry;

@@ -41,7 +41,7 @@ function (
             var task = this.store.get.apply(this.store, arguments);
             if (task) {
                 task = new Task(task);
-                task._searchText = Task.getDisplayText(task);
+                task._searchText = task.description;
             }
             return task;
         },
@@ -53,11 +53,9 @@ function (
             if (queryString) {
                 var escapedQueryString = this._escapeRegExp(queryString);
                 var beginningRegExp = new RegExp("(^|\\b)" + escapedQueryString, "i");
-                var endingRegExp = new RegExp(escapedQueryString + "$", "i");
 
                 rawQuery = function(task) {
-                    return ( task.code && ( beginningRegExp.test(task.code) || endingRegExp.test(task.code) ) )
-                        || ( task.name && beginningRegExp.test(task.name) );
+                    return task.description && beginningRegExp.test(task.description);
                 };
 
                 this._beginningRegExp = beginningRegExp;
@@ -70,7 +68,7 @@ function (
             this._queryString = queryString;
 
             var options = {
-//                sort: [{attribute: 'code', descending: true}]
+//                sort: [{attribute: 'description', descending: true}]
             };
             var rawResults = this.store.query(rawQuery, options);
 
@@ -94,23 +92,18 @@ function (
             if (this._beginningRegExp) {
                 task._searchText = this._buildSearchText(task);
             } else {
-                task._searchText = Task.getDisplayText(task);
+                task._searchText = task.description
             }
 
             return task;
         },
 
         _buildSearchText: function(task) {
-            var firstInCode = task.code && task.code.search(this._beginningRegExp);
-            if (firstInCode === 0) {
-                return Task.getDisplayText(task);
+            var locationInDescription = task.description && task.description.search(this._beginningRegExp);
+            if (locationInDescription === 0) {
+                return task.description;
             } else {
-                var firstInName = task.name && task.name.search(this._beginningRegExp);
-                if (firstInName === 0) {
-                    return task.name + "  ~ " + task.code;
-                } else {
-                    return this._queryString + "  ~ " + Task.getDisplayText(task);
-                }
+                return this._queryString + "  ~ " + task.description;
             }
         },
 

@@ -13,7 +13,7 @@ define([
     'dojox/mvc/sync',
     'dojo/text!./TimeEntryPane.html',
     /* In template: */
-    'mytime/widget/DaysInWeekList', 'mytime/widget/DailyTimeWidget', 'mytime/widget/DailyTimeList'
+    'mytime/widget/DaysInWeekList', 'mytime/widget/DailyTimeWidget'
 ], function (
     _, lang, declare,
     _WidgetBase,
@@ -29,22 +29,17 @@ define([
         templateString: template,
         _daysInWeekList: null,
         _dailyTimeWidget: null,
-        _dailyTimeList: null,
 
         currentDate: DateTimeUtil.getCurrentDate(),
 
         postCreate: function() {
             this.own(sync(this, 'currentDate', this._daysInWeekList, 'selectedDate'));
             this.own(sync(this, 'currentDate', this._dailyTimeWidget, 'date'));
-            this.own(sync(this, 'currentDate', this._dailyTimeList, 'date'));
-            this.own(sync(this._dailyTimeWidget, 'selectedId', this._dailyTimeList, 'selectedId'));
 
 
             this.own(syncFrom(modelRegistry, 'timeEntryStore', this._daysInWeekList));
             this.own(syncFrom(modelRegistry, 'timeEntryStore', this._dailyTimeWidget));
             this.own(syncFrom(modelRegistry, 'taskStore', this._dailyTimeWidget));
-            this.own(syncFrom(modelRegistry, 'timeEntryStore', this._dailyTimeList));
-            this.own(syncFrom(modelRegistry, 'taskStore', this._dailyTimeList));
 
             this.own(this._dailyTimeWidget.on('createTimeEntry', lang.hitch(this, '_createTimeEntry')));
             this.own(this._dailyTimeWidget.on('updateTimeEntry', lang.hitch(this, '_updateTimeEntry')));
@@ -56,7 +51,7 @@ define([
                 .then(lang.hitch(this, function(result) {
                     _.defer(lang.hitch(this, function() {
                         // When an entry is added start editing it.
-                        this._dailyTimeList.set("editingId", result.timeEntryId);
+                        this._dailyTimeWidget.set("selectedId", result.timeEntryId);
                     }));
                 }));
         },
