@@ -28,6 +28,7 @@ function (
      * The slide out details entry/task details pane
      *
      * @emit taskSelected {id: string, description: string}
+     * @emit jiraSelected {string}
      */
     return declare([_WidgetBase, _TemplatedMixin, _WidgetsInTemplateMixin, Evented], {
 

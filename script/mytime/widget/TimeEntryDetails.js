@@ -93,7 +93,6 @@ function (
         },
 
         _fillIn: function(timeEntry, task) {
-            // TODO watch for changes to this time entry and task
             this.currentTimeEntry = timeEntry;
             this.currentTask = task;
 
@@ -122,14 +121,20 @@ function (
                     });
                 }
             } else if (task.description) {
-                // new task
-                this._createTask({
-                    description: task.description
-                }).then(lang.hitch(this, function(result) {
-                    this._updateEntry({
-                        taskId: result.taskId
-                    });
-                }));
+                if (this.currentTask) {
+                    // update existing task
+                    this.currentTask.set('description', task.description);
+                    this._createOrUpdateTask(this.currentTask);
+                } else {
+                    // new task
+                    this._createTask({
+                        description: task.description
+                    }).then(lang.hitch(this, function (result) {
+                        this._updateEntry({
+                            taskId: result.taskId
+                        });
+                    }));
+                }
             }
         },
 
