@@ -32,4 +32,6 @@ define([
     new JiraController({ requestQueue: requestQueue });
 
     //mockData();
+    window.taskStore = modelRegistry.get('taskStore');
+    window.timeEntryStore = modelRegistry.get('timeEntryStore');
 });

@@ -7,7 +7,7 @@ define([
     "lodash", "dojo/_base/lang", "dojo/_base/declare", "dojo/when", "dojo/Stateful", "dojo/Evented",
     "dijit/_WidgetBase",
     "mytime/widget/TimeEntryDetails/TimeEntryDetailsView",
-    "mytime/store/JiraPicklistStore",
+    "mytime/store/DummyJiraPicklistStore",
     "mytime/command/UpdateTimeEntryCommand",
     "mytime/command/CreateTaskCommand", "mytime/command/UpdateTaskCommand",
     "mytime/util/whenAllPropertiesSet", "mytime/util/syncFrom"

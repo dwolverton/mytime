@@ -10,7 +10,9 @@ define([
     "dijit/form/Textarea", "dijit/form/FilteringSelect", "dijit/focus",
     "mytime/util/syncFrom", "mytime/util/whenAllPropertiesSet",
     "mytime/widget/TaskPickerCombo",
-    "dojo/text!mytime/widget/TimeEntryDetails/templates/TimeEntryDetails.html"
+    "dojo/text!mytime/widget/TimeEntryDetails/templates/TimeEntryDetails.html",
+    /* Widgets in Template */
+    "dijit/form/Form"
 ],
 function (
     _, lang, declare,
