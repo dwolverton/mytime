@@ -90,6 +90,7 @@ function (
 
         _onJiraKeyChange: function() {
             var jiraKey = this.jiraKeyInput.get('value');
+            jiraKey = jiraKey || null;
             if (jiraKey !== this.model.get('jiraKey')) {
                 on.emit(this, "jiraSelected", jiraKey);
             }

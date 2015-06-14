@@ -8,18 +8,23 @@ function (_, declare, lang, Deferred, GetJiraPickListCommand) {
     return declare([], {
 
         get: function(id) {
+            if (!id) {
+                return {
+                    id: null,
+                    description: '',
+                    label: 'NONE'
+                }
+            }
+
             return {
                 id: id,
-                description: 'Hello',
+                description: 'Created from ' + id,
                 label: id
             }
         },
 
         query: function(query) {
             var id = this._normalizeQuery(query);
-            if (!id) {
-                id = 'NONE'
-            }
 
             return [
                 this.get(id)

@@ -11,9 +11,10 @@ define([
     "dojo/dom-construct", "dojo/dom-class", "dojo/dom-style", "dojo/dom-geometry", "dojo/date/locale",
     "dojo/Evented",
     "dijit/_WidgetBase", "dijit/_TemplatedMixin",
-    "mytime/util/DateTimeUtil", "mytime/util/Colors",
+    "mytime/util/DateTimeUtil", "mytime/util/Colors", "mytime/util/Integrations", "mytime/util/jira",
     "dojo/text!./templates/grid.html",
-    "dojo/text!./templates/gridrow.html"
+    "dojo/text!./templates/gridrow.html",
+    "dojo/text!./templates/bar-content.html"
 ],
 function (declare,
           _,
@@ -22,9 +23,10 @@ function (declare,
           domConstruct, domClass, domStyle, domGeom, dateLocale,
           Evented,
           _WidgetBase, _TemplatedMixin,
-          DateTimeUtil, Colors,
-          template,
-          gridRowTemplate) {
+          DateTimeUtil, Colors, Integrations, jira,
+          template, gridRowTemplate, barContentTemplate) {
+
+    barContentTemplate = _.template(barContentTemplate);
 
     /**
      *
@@ -272,7 +274,7 @@ function (declare,
                 }
                 i++;
             }
-            this._setTextOnTimeBars(timeBars, timeEntry.description);
+            this._setTextOnTimeBars(timeBars, timeEntry);
         },
 
         _buildTimeBarsForTimeEntry: function(timeEntry) {
@@ -282,7 +284,7 @@ function (declare,
                 timeBars.push(timebar);
                 this._placeTimeBar(timebar, slot.hour);
             }, this);
-            this._setTextOnTimeBars(timeBars, timeEntry.description);
+            this._setTextOnTimeBars(timeBars, timeEntry);
         },
 
         _placeTimeBar: function(timebar, hour) {
@@ -322,11 +324,10 @@ function (declare,
             domClass.toggle(timeBar, "end", slot.isEnd);
         },
 
-        _setTextOnTimeBars: function(timeBars, text) {
+        _setTextOnTimeBars: function(timeBars, timeEntry) {
             if (!timeBars || timeBars.length == 0) {
                 return;
             }
-            text = text || "";
             var middle;
             if (timeBars.length % 2 == 0) {
                 // even
@@ -340,8 +341,33 @@ function (declare,
             }
 
             _.forEach(timeBars, function(bar, i) {
-                bar.innerText = (middle === i) ? text : "";
-            });
+                if (middle == i) {
+                    this._setTextOnTimeBar(bar, timeEntry);
+                } else {
+                    this._clearTextOnTimeBar(bar);
+                }
+            }, this);
+        },
+
+        _setTextOnTimeBar: function(timeBar, timeEntry) {
+            if (!timeEntry || !timeEntry.description) {
+                this._clearTextOnTimeBar(timeBar);
+                return;
+            }
+            var data = {
+                timeEntry: timeEntry
+            };
+            var taskJira = Integrations.getIntegrationOfType(timeEntry.taskIntegrations, 'jira');
+            if (taskJira && taskJira.id) {
+                data.jiraKey = taskJira.id;
+                data.jiraLoggingUrl = jira.buildTimeLoggingLink(taskJira.id, timeEntry);
+            }
+
+            timeBar.innerHTML = barContentTemplate(data);
+        },
+
+        _clearTextOnTimeBar: function(timeBar) {
+            timeBar.innerHTML = '';
         },
 
         _timeEntryRemoved: function(timeEntry) {

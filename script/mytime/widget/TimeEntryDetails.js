@@ -134,24 +134,23 @@ function (
             }
         },
 
-        _jiraSelected: function() {
-
+        _jiraSelected: function(selectedJiraKey) {
+            this._onJiraKeyChange(selectedJiraKey);
         },
 
-        _onJiraKeyChange: function() {
-            var item = this.jiraKeyInput.get('item');
-            var key = item ? item.id : null;
+        _onJiraKeyChange: function(key) {
+            console.log("onJiraKeyChange", key);
 
             var task = this.currentTask;
             var entry = this.currentTimeEntry;
             if (key && !task) {
                 task = {
-                    description: item.label
+                    description: this.jiraStore.get(key).label // TODO: will not work with async store
                 };
             }
 
             if (!key) {
-                if (!this._removeIterationOfType(task, 'jira')) {
+                if (!this._removeIntegrationOfType(task, 'jira')) {
                     return;
                 }
             } else {
@@ -196,7 +195,7 @@ function (
         /**
          * Return true if found and removed.
          */
-        _removeIterationOfType: function(object, type) {
+        _removeIntegrationOfType: function(object, type) {
             if (!object) {
                 return false;
             }

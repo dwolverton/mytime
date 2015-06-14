@@ -1,0 +1,8 @@
+<span class="description"><%- timeEntry.description %></span>
+<% if (typeof jiraKey === 'string') { %>
+<span class="jira">
+    <a class="jira-create-worklog" target="_blank" href="<%- jiraLoggingUrl %>">
+        <img src="images/jira-icon.png"><%- jiraKey %><span class="check">&#x2713;</span>
+    </a>
+</span>
+<% } %>

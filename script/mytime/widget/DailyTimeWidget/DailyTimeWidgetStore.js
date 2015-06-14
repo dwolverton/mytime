@@ -49,6 +49,7 @@ define([
                 if (task) {
                     timeEntry.color = task.color;
                     timeEntry.description = task.description;
+                    timeEntry.taskIntegrations = task.integrations;
                 }
             }
             return timeEntry;
