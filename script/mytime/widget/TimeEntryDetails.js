@@ -10,7 +10,7 @@ define([
     "mytime/store/DummyJiraPicklistStore",
     "mytime/command/UpdateTimeEntryCommand",
     "mytime/command/CreateTaskCommand", "mytime/command/UpdateTaskCommand",
-    "mytime/util/whenAllPropertiesSet", "mytime/util/syncFrom"
+    "mytime/util/whenAllPropertiesSet", "mytime/util/syncFrom", "mytime/util/store/getAndObserve"
 ],
 function (
     _, lang, declare, when, Stateful, Evented,
@@ -18,7 +18,7 @@ function (
     TimeEntryDetailsView,
     JiraPicklistStore,
     UpdateTimeEntryCommand, CreateTaskCommand, UpdateTaskCommand,
-    whenAllPropertiesSet, syncFrom) {
+    whenAllPropertiesSet, syncFrom, getAndObserve) {
 
     /**
      * details entry/task details pane
@@ -81,15 +81,19 @@ function (
         },
 
         _fillInFromId: function(timeEntryId) {
-            when(this.timeEntryStore.get(timeEntryId), lang.hitch(this, function(timeEntry) {
+            this._timeEntryUpdateHandle && this._timeEntryUpdateHandle.remove();
+            this.own(this._timeEntryUpdateHandle =
+                    getAndObserve(this.timeEntryStore, timeEntryId, lang.hitch(this, function(timeEntry) {
                 if (timeEntry.taskId) {
-                    when(this.taskStore.get(timeEntry.taskId), lang.hitch(this, function (task) {
+                    this._taskUpdateHandle && this._taskUpdateHandle.remove();
+                    this.own(this._taskUpdateHandle =
+                            getAndObserve(this.taskStore, timeEntry.taskId, lang.hitch(this, function (task) {
                         this._fillIn(timeEntry, task);
-                    }), lang.hitch(this._view, 'hide'));
+                    })));
                 } else {
                     this._fillIn(timeEntry, null);
                 }
-            }), lang.hitch(this._view, 'hide'));
+            })));
         },
 
         _fillIn: function(timeEntry, task) {

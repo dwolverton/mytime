@@ -11,6 +11,7 @@ define([
     "test/mytime/util/jira.spec",
     "test/mytime/util/store/EnhancedMemoryStore.spec",
     "test/mytime/util/store/delegateObserve.spec",
+    "test/mytime/util/store/getAndObserve.spec",
     "test/mytime/util/store/StoreDrivenDom.spec",
     "test/mytime/util/store/TransformingStoreView.spec",
     "test/mytime/util/whenAllPropertiesSet.spec",
