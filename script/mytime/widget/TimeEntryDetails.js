@@ -20,9 +20,8 @@ function (
     UpdateTimeEntryCommand, CreateTaskCommand, UpdateTaskCommand,
     whenAllPropertiesSet, syncFrom) {
 
-
     /**
-     * The slide out details entry/task details pane
+     * details entry/task details pane
      */
     return declare([_WidgetBase, Evented], {
 

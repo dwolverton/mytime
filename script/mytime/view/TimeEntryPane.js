@@ -13,7 +13,7 @@ define([
     'dojox/mvc/sync',
     'dojo/text!./TimeEntryPane.html',
     /* In template: */
-    'mytime/widget/DaysInWeekList', 'mytime/widget/DailyTimeWidget', 'mytime/widget/TimeEntryDetails'
+    'mytime/widget/DaysInWeekList', 'mytime/widget/DailyTimeWidget', "mytimewidget/TimeEntryDetails"
 ], function (
     _, lang, declare,
     _WidgetBase,

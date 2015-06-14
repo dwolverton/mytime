@@ -17,6 +17,7 @@ define([
     "test/mytime/widget/DailyTimeWidget/DailyTimeWidgetStore.spec",
     "test/mytime/widget/DailyTimeWidget/DailyTimeWidgetView.spec",
     "test/mytime/widget/TaskPickerCombo.spec",
+    "test/mytime/widget/TimeEntryDetails.spec",
 
     "test/dojo/Stateful.spec",
     "test/dojo/store/Observable.spec"
