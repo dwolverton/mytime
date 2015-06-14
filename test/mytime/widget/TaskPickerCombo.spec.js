@@ -18,12 +18,12 @@ define([
              expect(parse("")).to.equal(null);
              expect(parse("    ")).to.equal(null);
              expect(parse("A")).to.deep.equal(null);
-             expect(parse("AA")).to.deep.equal({ code: "AA" });
-             expect(parse("ARP-123")).to.deep.equal({ code: "ARP-123" });
-             expect(parse("ARP-123 ")).to.deep.equal({ code: "ARP-123" });
-             expect(parse("ARP-123 h")).to.deep.equal({ code: "ARP-123", name: "h" });
-             expect(parse("ARP-123 Hello World")).to.deep.equal({ code: "ARP-123", name: "Hello World" });
-             expect(parse("ARP-123    Hello World    ")).to.deep.equal({ code: "ARP-123", name: "Hello World" });
+             expect(parse("AA")).to.deep.equal({ description: "AA" });
+             expect(parse("ARP-123")).to.deep.equal({ description: "ARP-123" });
+             expect(parse("ARP-123 ")).to.deep.equal({ description: "ARP-123" });
+             expect(parse("ARP-123 h")).to.deep.equal({ description: "ARP-123 h" });
+             expect(parse("ARP-123 Hello World")).to.deep.equal({ description: "ARP-123 Hello World" });
+             expect(parse("ARP-123    Hello World    ")).to.deep.equal({ description: "ARP-123    Hello World" });
         });
     });
 });

@@ -63,9 +63,6 @@ function (
             });
             this.jiraKeyInput.placeAt(this.jiraKeyNode);
 
-            window.tl = this.descriptionInput;
-            window.jl = this.jiraKeyInput;
-
             this.own(
                 on(this.descriptionInput, "userchange", lang.hitch(this, '_onDescriptionChange') ),
                 on(this.jiraKeyInput, "change", lang.hitch(this, "_onJiraKeyChange")),

@@ -281,16 +281,16 @@ define([
                        ["b", 12.5, 13]);
         });
 
-        it("gets code and color from task", function() {
+        it("gets description and color from task", function() {
             initSourceStore();
             addToSource("a", "2010-10-10", 12, 15, "task-2");
-            taskStore.add({id: "task-1", code: "CODE1", color: "red"});
-            taskStore.add({id: "task-2", code: "CODE2", color: "yellow"});
+            taskStore.add({id: "task-1", description: "CODE1", color: "red"});
+            taskStore.add({id: "task-2", description: "CODE2", color: "yellow"});
             initStore();
 
             var result = store.get("a");
             expect(result).to.have.property("taskId", "task-2");
-            expect(result).to.have.property("code", "CODE2");
+            expect(result).to.have.property("description", "CODE2");
             expect(result).to.have.property("color", "yellow");
         });
     });
