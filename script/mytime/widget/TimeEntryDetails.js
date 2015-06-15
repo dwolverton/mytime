@@ -10,7 +10,8 @@ define([
     "mytime/store/DummyJiraPicklistStore",
     "mytime/command/UpdateTimeEntryCommand",
     "mytime/command/CreateTaskCommand", "mytime/command/UpdateTaskCommand",
-    "mytime/util/whenAllPropertiesSet", "mytime/util/syncFrom", "mytime/util/store/getAndObserve"
+    "mytime/util/whenAllPropertiesSet", "mytime/util/syncFrom", "mytime/util/store/getAndObserve",
+    "mytime/util/Integrations"
 ],
 function (
     _, lang, declare, when, Stateful, Evented,
@@ -18,7 +19,8 @@ function (
     TimeEntryDetailsView,
     JiraPicklistStore,
     UpdateTimeEntryCommand, CreateTaskCommand, UpdateTaskCommand,
-    whenAllPropertiesSet, syncFrom, getAndObserve) {
+    whenAllPropertiesSet, syncFrom, getAndObserve,
+    Integrations) {
 
     /**
      * details entry/task details pane
@@ -102,7 +104,7 @@ function (
 
             this._model.set('task', task);
 
-            var jiraIntegration = this._getIntegrationOfType(task, 'jira');
+            var jiraIntegration = Integrations.getIntegrationOfType(task, 'jira');
             if (jiraIntegration) {
                 this._model.set('jiraKey', jiraIntegration.id);
             } else {
@@ -150,76 +152,57 @@ function (
             console.log("onJiraKeyChange", key);
 
             var task = this.currentTask;
-            var entry = this.currentTimeEntry;
-            if (key && !task) {
-                task = {
-                    description: this.jiraStore.get(key).label // TODO: will not work with async store
-                };
-            }
-
-            if (!key) {
-                if (!this._removeIntegrationOfType(task, 'jira')) {
-                    return;
+            if (task) {
+                if (key) {
+                    var integration = Integrations.getOrAddIntegrationOfType(task, 'jira');
+                    if (integration.id === key) {
+                        return;
+                    }
+                    integration.id = key;
+                } else {
+                    if (!Integrations.removeIntegrationOfType(task, 'jira')) {
+                        return;
+                    }
                 }
+
+                this._updateTask(task).then(lang.hitch(this, '_updateTimeEntryAfterTaskChange', this.currentTimeEntry));
             } else {
-                var integration = this._getOrAddIntegrationOfType(task, 'jira');
-                if (integration.id === key) {
-                    return;
+                if (key) {
+                    this._setTaskFromJiraKey(key);
                 }
-                integration.id = key;
             }
+        },
 
-            this._createOrUpdateTask(task).then(lang.hitch(this, function(result) {
-                var task = result.task;
-                var change = false;
-                if (entry.taskId !== task.id) {
-                    entry.taskId = task.id;
-                    change = true;
-                }
-                // TODO here we need to update associated entries at some point
+        _setTaskFromJiraKey: function(jiraKey) {
+            var timeEntry = this.currentTimeEntry;
 
-                if (change) {
-                    this._updateEntry(entry);
-                }
+            when(this.jiraStore.get(jiraKey), lang.hitch(this, function(jiraItem) {
+                var task = {
+                    description: jiraItem.label
+                };
+                Integrations.getOrAddIntegrationOfType(task, 'jira').id = jiraKey;
+                this._createTask(task).then(lang.hitch(this, '_updateTimeEntryAfterTaskChange', timeEntry));
             }));
         },
 
-        _getOrAddIntegrationOfType: function(object, type) {
-            object.integrations = object.integrations || [];
-            var integration = _.find(object.integrations, {type: type});
-            if (!integration) {
-                integration = {
-                    type: type
-                };
-                object.integrations.push(integration);
+        _updateTimeEntryAfterTaskChange: function(timeEntry, taskUpdateResult) {
+            var task = taskUpdateResult.task;
+            var change = false;
+            if (timeEntry.taskId !== task.id) {
+                timeEntry.taskId = task.id;
+                change = true;
             }
-            return integration;
-        },
 
-        _getIntegrationOfType: function(object, type) {
-            return _.find(object ? object.integrations : null, {type: type});
-        },
-
-        /**
-         * Return true if found and removed.
-         */
-        _removeIntegrationOfType: function(object, type) {
-            if (!object) {
-                return false;
+            if (change) {
+                this._updateEntry(timeEntry);
             }
-            var index = _.findIndex(object.integrations, {type: type});
-            if (index != -1) {
-                object.integrations.splice(index, 1);
-                return true;
-            }
-            return false;
         },
 
         _createOrUpdateTask: function(task) {
             if (task.id) {
-                return new UpdateTaskCommand({task: task}).exec();
+                return this._updateTask(task);
             } else {
-                return new CreateTaskCommand({task: task}).exec();
+                return this._createTask(task);
             }
         },
 
@@ -230,6 +213,10 @@ function (
 
         _createTask: function(task) {
             return new CreateTaskCommand({task: task}).exec();
+        },
+
+        _updateTask: function(task) {
+            return new UpdateTaskCommand({task: task}).exec();
         }
 
     });
