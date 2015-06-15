@@ -42,7 +42,8 @@ function (
         constructor: function() {
             this._model = new Stateful({
                 task: null,
-                jiraKey: null
+                jiraKey: null,
+                linkedEntry: null
             });
 
             this._view = new TimeEntryDetailsView({
@@ -110,6 +111,25 @@ function (
             } else {
                 this._model.set('jiraKey', null);
             }
+
+            if (task) {
+                this._updateLinkedEntry(task.id);
+            } else {
+                this._model.set('linkedEntry', null);
+            }
+        },
+
+        _updateLinkedEntry: function(taskId) {
+            when(this.timeEntryStore.query({taskId: taskId, 'id!': this.selectedId}, {sort: [
+                {attribute: 'date', descending: true},
+                {attribute: 'startHour', descending: true}
+            ]}), lang.hitch(this, function(entries) {
+                if (entries.length == 0) {
+                    this._model.set('linkedEntry', null);
+                } else {
+                    this._model.set('linkedEntry', entries[0]);
+                }
+            }));
         },
 
         _taskSelected: function(task) {

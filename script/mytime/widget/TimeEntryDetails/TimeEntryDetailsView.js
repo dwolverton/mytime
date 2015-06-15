@@ -5,10 +5,10 @@
  */
 define([
     "lodash", "dojo/_base/lang", "dojo/_base/declare",
-    "dojo/dom-construct", "dojo/dom-class", "dojo/dom-attr", "dojo/on", "dojo/query", "dojo/Evented", "dojo/dom",
+    "dojo/dom-class", "dojo/on", "dojo/query", "dojo/Evented", "dojo/dom",
     "dijit/_WidgetBase", "dijit/_TemplatedMixin", "dijit/_WidgetsInTemplateMixin",
-    "dijit/form/Textarea", "dijit/form/FilteringSelect", "dijit/focus",
-    "mytime/util/syncFrom", "mytime/util/whenAllPropertiesSet",
+    "dijit/form/FilteringSelect", "dijit/focus",
+    "mytime/util/syncFrom", "mytime/util/whenAllPropertiesSet", "mytime/util/DateTimeUtil",
     "mytime/widget/TaskPickerCombo",
     "dojo/text!mytime/widget/TimeEntryDetails/templates/TimeEntryDetails.html",
     /* Widgets in Template */
@@ -16,10 +16,10 @@ define([
 ],
 function (
     _, lang, declare,
-    domConstruct, domClass, domAttr, on, query, Evented, dom,
+    domClass, on, query, Evented, dom,
     _WidgetBase, _TemplatedMixin, _WidgetsInTemplateMixin,
-    Textarea, FilteringSelect, focusUtil,
-    syncFrom, whenAllPropertiesSet,
+    FilteringSelect, focusUtil,
+    syncFrom, whenAllPropertiesSet, DateTimeUtil,
     TaskPickerCombo,
     template) {
 
@@ -37,6 +37,8 @@ function (
         // in template
         descriptionNode: null,
         jiraKeyNode: null,
+        unlinkArea: null,
+        linkedEntryDate: null,
 
         descriptionInput: null,
         jiraKeyInput: null,
@@ -67,7 +69,8 @@ function (
             this.own(
                 on(this.descriptionInput, "userchange", lang.hitch(this, '_onDescriptionChange') ),
                 on(this.jiraKeyInput, "change", lang.hitch(this, "_onJiraKeyChange")),
-                this.model.watch('task', lang.hitch(this, "_incomingTaskChange"))
+                this.model.watch('task', lang.hitch(this, "_incomingTaskChange")),
+                this.model.watch('linkedEntry', lang.hitch(this, "_linkedEntryChange"))
             );
 
             syncFrom(this.model, "jiraKey", this.jiraKeyInput, "value");
@@ -96,6 +99,15 @@ function (
 
         _incomingTaskChange: function(prop, prevValue, value) {
             this.descriptionInput.set('task', value);
+        },
+
+        _linkedEntryChange: function(prop, prevValue, value) {
+            if (value && value.date) {
+                var date = DateTimeUtil.convertDateStringToDateObject(value.date);
+                date = DateTimeUtil.formatFriendlyDate(date);
+                this.linkedEntryDate.textContent = date;
+            }
+            domClass.toggle(this.unlinkArea, 'show', !!value);
         }
 
     });

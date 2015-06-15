@@ -4,9 +4,11 @@
  * Available under MIT license <https://raw.githubusercontent.com/dwolverton/my/master/LICENSE.txt>
  */
 define([
-    "exports", "dojo/number"
+    "exports", "dojo/number", "dojo/date/locale"
 ],
-function (exports, number) {
+function (exports, number, locale) {
+
+    var MILLIS_PER_DAY = 24 * 60 * 60 * 1000;
 
     /**
      * Returns the whole number beginning of the hour. For example, 11.5 would return 11.
@@ -123,4 +125,27 @@ function (exports, number) {
     exports.formatWithTwoDecimals = function(duration) {
         return number.format(duration, { places: 2});
     };
+
+    /**
+     * Given a JavaScript date, format it in a friendly way (excludes time)
+     * @param {Date} date
+     */
+    exports.formatFriendlyDate = function(date) {
+        var now = new Date();
+        now.setHours(0);
+        now.setMinutes(0);
+        now.setSeconds(0);
+        now.setMilliseconds(0);
+        var today = now.valueOf();
+
+        if (date.valueOf() >= today && date.valueOf() - today < MILLIS_PER_DAY) {
+            return 'Today';
+        } else if (date.valueOf() < today && today - date.valueOf() <= MILLIS_PER_DAY) {
+            return 'Yesterday';
+        } else if (now.getYear() === date.getYear()) {
+            return locale.format(date, {selector: 'date', datePattern: 'MMM d'});
+        } else {
+            return locale.format(date, {selector: 'date', datePattern: 'MMM d, yyyy'});
+        }
+    }
 });

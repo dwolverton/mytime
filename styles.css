@@ -301,6 +301,18 @@ div.time-entry-details {
         display: block;
     }
 
+    div.time-entry-details .unlink-area {
+        display: none;
+    }
+
+        div.time-entry-details .unlink-area.show {
+            display: block;
+        }
+        
+        div.time-entry-details .linked-entry-date {
+            font-weight: bold;
+        }
+
 div.dayslist {
     float: left;
 }

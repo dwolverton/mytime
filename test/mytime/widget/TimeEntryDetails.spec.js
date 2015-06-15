@@ -6,17 +6,18 @@
 define([
     "lodash",
     "dojo/_base/declare", "dojo/Evented",
-    "dojo/store/Memory", "dojo/store/Observable",
     "mytime/widget/TimeEntryDetails", "mytime/model/Task", "mytime/model/TimeEntry",
     "mytime/command/CreateTaskCommand", "mytime/command/UpdateTaskCommand", "mytime/command/UpdateTimeEntryCommand",
+    "mytime/util/store/EnhancedMemoryStore",
     "test/MockDependencyLoader"
-], function(_, declare, Evented, Memory, Observable, TimeEntryDetails, Task, TimeEntry,
-            CreateTaskCommand, UpdateTaskCommand, UpdateTimeEntryCommand, MockDependencyLoader) {
+], function(_, declare, Evented, TimeEntryDetails, Task, TimeEntry,
+            CreateTaskCommand, UpdateTaskCommand, UpdateTimeEntryCommand, EnhancedMemoryStore, MockDependencyLoader) {
 
     describe("mytime/TimeEntryDetails", function() {
 
         var widget, model, view, timeEntryStore, taskStore;
         var taskA, taskB, entryWithTask, entryWithoutTask;
+        var otherEntry1, otherEntry2, otherEntry3;
         var createTaskCommand = setupCommandListener(CreateTaskCommand, 'task');
         var updateTaskCommand = setupCommandListener(UpdateTaskCommand, 'task');
         var updateTimeEntryCommand = setupCommandListener(UpdateTimeEntryCommand, 'timeEntry');
@@ -47,14 +48,16 @@ define([
         }
 
         function initStores() {
-            timeEntryStore = new Observable(new Memory());
-            taskStore = new Observable(new Memory());
+            timeEntryStore = EnhancedMemoryStore.createObservable();
+            taskStore = EnhancedMemoryStore.createObservable();
 
             taskStore.add(taskA = new Task({id: "A", description: "Alpha"}));
             taskStore.add(taskB = new Task({id: "B", description: "Beta"}));
             timeEntryStore.add(entryWithTask = new TimeEntry({id: "has-task", taskId: "A"}));
-            timeEntryStore.add(new TimeEntry({id: "has-task2", taskId: "A"}));
-            timeEntryStore.add(entryWIthoutTask = new TimeEntry({id: "no-task"}));
+            timeEntryStore.add(otherEntry1 = new TimeEntry({id: "other1", taskId: "A", date: "2015-06-10", startHour: 14}));
+            timeEntryStore.add(otherEntry2 = new TimeEntry({id: "other2", taskId: "A", date: "2015-06-11", startHour: 6}));
+            timeEntryStore.add(otherEntry3 = new TimeEntry({id: "other3", taskId: "A", date: "2015-06-11", startHour: 12}));
+            timeEntryStore.add(entryWithoutTask = new TimeEntry({id: "no-task"}));
         }
 
         function initWidget() {
@@ -137,8 +140,28 @@ define([
         });
 
 
-        it('when the selected task has other entries, displays the option to fork a new task, including info about latest related time entry');
-        it('when the selected task has no other entries, does not display the option to fork a new task');
+        it('when the selected task has other entries, displays the option to fork a new task, including info about latest related time entry', function() {
+            initWidget();
+            widget.set('selectedId', 'has-task');
+            expect(model.linkedEntry).to.equal(otherEntry3);
+
+            entryWithTask.taskId = "B";
+            timeEntryStore.put(entryWithTask);
+            expect(model.linkedEntry).to.equal(null);
+        });
+        it('when the selected task has no other entries, does not display the option to fork a new task', function() {
+            initWidget();
+            widget.set('selectedId', 'no-task');
+            expect(model.linkedEntry).to.equal(null);
+        });
+        it('when the selected task changes to have no other entries, hides the option to fork a new task', function() {
+            initWidget();
+            widget.set('selectedId', 'has-task');
+
+            entryWithTask.taskId = "B";
+            timeEntryStore.put(entryWithTask);
+            expect(model.linkedEntry).to.equal(null);
+        });
 
         it('when a JIRA is selected AND task already assigned, set the JIRA key on the task');
         it('when a JIRA is unselected AND task already assigned, unset the JIRA key on the task');
