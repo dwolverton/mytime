@@ -79,6 +79,8 @@ function (
 
         show: function() {
             domClass.toggle(this.domNode, 'open', true);
+            this.descriptionInput.focus();
+            this.descriptionInput.textbox.select();
         },
 
         hide: function() {
