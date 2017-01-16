@@ -9,10 +9,10 @@ define([
 ], function(CreateTaskCommand, CreateTimeEntryCommand,
             DateTimeUtil) {
     return function() {
-        new CreateTaskCommand({ task: { code: "CAYENNE-1234", name: "Squash a Bug" } }).exec();
-        new CreateTaskCommand({ task: { code: "CAYENNE-456", name: "Make it Work" } }).exec();
-        new CreateTaskCommand({ task: { code: "CAYENNE-789", name: "Do Something Awesome" } }).exec();
-        new CreateTaskCommand({ task: { code: "PSP-100", name: "Uh Oh..." } }).exec();
+        new CreateTaskCommand({ task: { description: "CAYENNE-1234 Squash a Bug" } }).exec();
+        new CreateTaskCommand({ task: { description: "CAYENNE-456 Make it Work" } }).exec();
+        new CreateTaskCommand({ task: { description: "CAYENNE-789 Do Something Awesome" } }).exec();
+        new CreateTaskCommand({ task: { description: "PSP-100 Uh Oh..." } }).exec();
 
         new CreateTimeEntryCommand({ timeEntry: {
             date: DateTimeUtil.getCurrentDate(), startHour: 8.5, endHour: 9.75,

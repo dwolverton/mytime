@@ -10,26 +10,13 @@ define([
     module, declare, _ModelBase
 ) {
     var Task = declare(module.id, [_ModelBase], {
-        _propertyNames: ["id", "code", "name", "color"],
+        _propertyNames: ["id", "description", "color", "integrations"],
 
         id: null,
-        code: null,
-        name: null,
-        color: null
+        description: null,
+        color: null,
+        integrations: null
     });
-
-    /**
-     * "static" method to build a string for the task, including code and name if available.
-     * @param task
-     * @returns {string}
-     */
-    Task.getDisplayText = function(task) {
-        var text = task.code || "";
-        if (task.name) {
-            text += " " + task.name;
-        }
-        return text;
-    };
 
     return Task;
 });

@@ -13,13 +13,22 @@ function (exports, _, lang, Context) {
      */
     lang.mixin(exports, {
 
+        /**
+         * The object is automatically stored specifically for the current context.
+         */
         persistObject: function(key, object) {
             key = this._getKeyForContext(key);
+            this.persistObjectWithoutContext(key, object);
+        },
+
+        /**
+         * The object is stored in a way that is shared between all contexts.
+         */
+        persistObjectWithoutContext: function(key, object) {
             localStorage.setItem(key, JSON.stringify(object));
         },
 
         /**
-         *
          * @param {string} key
          * @param {function} [constructor] if specified, the retrieved object will be passed into the constructor to
          *                   return an object of that type (optional - if not specified the raw persisted data is
@@ -28,6 +37,17 @@ function (exports, _, lang, Context) {
          */
         retrieveObject: function(key, constructor) {
             key = this._getKeyForContext(key);
+            return this.retrieveObjectWithoutContext(key, constructor);
+        },
+
+        /**
+         * @param {string} key
+         * @param {function} [constructor] if specified, the retrieved object will be passed into the constructor to
+         *                   return an object of that type (optional - if not specified the raw persisted data is
+         *                   returned.
+         * @returns {*}
+         */
+        retrieveObjectWithoutContext: function(key, constructor) {
             var object = localStorage.getItem(key);
             if (!object) {
                 return null;

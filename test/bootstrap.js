@@ -6,7 +6,7 @@
 require({
     packages: [
         { name: 'mytime', location: '../../script/mytime' },
-        { name: 'lodash', location: '../lodash/dist', main: 'lodash.min' },
+        { name: 'lodash', location: '../lodash', main: 'lodash.min' },
 
         { name: 'test', location: '../../test' },
         { name: 'mocha', location: '../mocha', main: 'mocha' },

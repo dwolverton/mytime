@@ -1,11 +1,11 @@
 {
     "name": "mytime",
-    "version": "0.0",
+    "version": "1.0",
     "dependencies": {
-        "dojo": "1.8.4",
-        "dojox": "1.8.4",
-        "dijit": "1.8.4",
-        "lodash": "2.4.1"
+        "dojo": "1.10",
+        "dojox": "1.10",
+        "dijit": "1.10",
+        "lodash": "3.8.0"
     },
     "devDependencies": {
         "mocha": "*",

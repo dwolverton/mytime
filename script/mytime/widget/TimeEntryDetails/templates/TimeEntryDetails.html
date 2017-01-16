@@ -1,0 +1,15 @@
+<div class="time-entry-details">
+    <form data-dojo-type="dijit/form/Form" data-dojo-attach-point="form">
+        <div class="form-field" data-dojo-attach-point="descriptionNode">
+            <label>Task:</label>
+        </div>
+        <div class="form-field" data-dojo-attach-point="jiraKeyNode">
+            <label>JIRA:</label>
+        </div>
+        <div class="unlink-area" data-dojo-attach-point="unlinkArea">
+            This entry is linked with other entries. The most <br/>
+            recent linked entry is <span class="linked-entry-date" data-dojo-attach-point="linkedEntryDate"></span>.
+            <br/><button type="button">Click to Unlink.</button>
+        </div>
+    </form>
+</div>

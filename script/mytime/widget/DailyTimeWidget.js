@@ -34,7 +34,7 @@ function (
          */
         date: null,
 
-        startHour: 6,
+        startHour: 0,
 
         endHour: 23,
 
@@ -45,8 +45,8 @@ function (
 
         selectedId: null,
 
-        nowHour: 0,
-        endOfDayHour: 0,
+        nowHour: -1,
+        endOfDayHour: -1, // TODO update this according to hours remaining
         
         _internalStore: null,
 
@@ -78,6 +78,8 @@ function (
             this.own(
                 this._view.on("endDrag", lang.hitch(this, "_endDragListener")),
                 this._view.on("click", lang.hitch(this, "_clickListener")),
+                this._view.on("prevDay", lang.hitch(this, "addDays", -1)),
+                this._view.on("nextDay", lang.hitch(this, "addDays", +1)),
                 this.watch("date", lang.hitch(this, "_updateNowHour"))
             );
 
@@ -104,6 +106,8 @@ function (
             var entry = this._findEntryContainingHour(hour);
             if (entry && entry.id !== this.selectedId) {
                 this.set("selectedId", entry.id);
+            } else if (!entry) {
+                this.set("selectedId", null);
             }
         },
 
@@ -212,6 +216,18 @@ function (
             } else {
                 this.set("nowHour", -1);
             }
+        },
+
+        /**
+         * Adjust the selectedDate by a certain number of days.
+         * @param daysToAdd number of days to add + or -
+         */
+        addDays: function(daysToAdd) {
+            var date = DateTimeUtil.convertDateStringToDateObject(this.get('date'));
+            var millis = date.valueOf();
+            millis += 86400000 * daysToAdd;
+            date.setTime(millis);
+            this.set('date', DateTimeUtil.convertDateObjectToDateString(date));
         }
 
     });

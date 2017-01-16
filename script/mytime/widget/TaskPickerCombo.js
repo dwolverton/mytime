@@ -4,14 +4,14 @@
  * Available under MIT license <https://raw.githubusercontent.com/dwolverton/my/master/LICENSE.txt>
  */
 define([
-    "lodash", "dojo/_base/lang", "dojo/_base/declare",
+    "lodash", "dojo/_base/lang", "dojo/_base/declare", "dojo/on",
     "dijit/form/ComboBox",
     "mytime/command/CreateTaskCommand", "mytime/model/Task",
     "mytime/util/Colors",
     "mytime/widget/TaskPickerComboStore"
 ],
 function (
-    _, lang, declare,
+    _, lang, declare, on,
     ComboBox,
     CreateTaskCommand, Task,
     Colors,
@@ -25,19 +25,26 @@ function (
 
         queryExpr: "${0}",
 
+        _lastTask: null,
+
         constructor: function() {
             this.baseClass += " taskpicker";
         },
 
         _getTaskAttr: function() {
-            return this.get("item");
+            var task = this.get("item");
+            if (!task) {
+                task = this._parseStringToTask(this.get('value'));
+            }
+            return task;
         },
 
         _setTaskAttr: function(task) {
             if (task) {
                 task = new Task(task);
-                task._searchText = Task.getDisplayText(task);
+                task._searchText = task.description;
             }
+            this._lastTask = task;
             this.set("item", task);
         },
 
@@ -50,13 +57,37 @@ function (
 
         _handleOnChange: function(newStringValue) {
             this.inherited(arguments);
-            if (!this.item && newStringValue) {
-                var task = this._parseStringToTask(newStringValue);
-                if (task) {
-                    new CreateTaskCommand({task: task}).exec().then(lang.hitch(this, function(result) {
-                        this.set("task", result.task);
-                    }));
+            //if (this.item && this.item.description != newStringValue) {
+            //    this.set('value', this.item.description);
+            //}
+        },
+
+        postCreate: function() {
+            this.inherited(arguments);
+            this.own(
+                on(this, "change", lang.hitch(this, '_checkForChange'))
+            );
+        },
+
+        _checkForChange: function() {
+            var task = this.get('task');
+            var taskId = task ? task.id : null;
+            var taskDescription = task ? task.description : null;
+            if (this._lastTask) {
+                if (this._lastTask.id !== taskId || this._lastTask.description !== taskDescription) {
+                    this._lastTask = task;
+                    this.onUserchange(task);
                 }
+            } else {
+                if (taskDescription) {
+                    this._lastTask = task;
+                    this.onUserchange(task);
+                }
+            }
+
+            var expectedDescription = task ? task.description : '';
+            if (this.get('value') !== expectedDescription) {
+                this.set('task', task);
             }
         },
 
@@ -67,31 +98,22 @@ function (
             }
 
             var task = {
-                code: string
+                description: string
             };
-            var firstSpace = string.indexOf(' ');
-            if (firstSpace > -1) {
-                task.code = string.substring(0, firstSpace);
-                task.name = string.substring(firstSpace + 1).trim();
-                if (task.name.length < 1) {
-                    delete task.name;
-                }
-            }
-            return this._isValidCode(task.code) ? task : null;
+            return this._isValidDescription(task.description) ? task : null;
         },
 
-        _isValidCode: function(code) {
-            return code && code.length > 1;
+        _isValidDescription: function(description) {
+            return description && description.length > 1;
         },
 
-        labelFunc: function(item, store) {
-            return '<span class="task" style="color: ' + Colors.dark(item.color) + '"><span class="code">' +
-                _.escape(item.code) + '</span> <span class="name">' + _.escape(item.name || "") + '</span></span>';
-        },
+        labelAttr: "description",
 
         focusAndSelectAll: function() {
             this.focus();
             this.focusNode.select();
-        }
+        },
+
+        onUserchange: function(task) {}
     });
 });

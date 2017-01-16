@@ -112,10 +112,20 @@ div.dayslist {
 
 
 div.timegrid {
-	width: 300px;
+	width: 600px;
 	font-family: sans-serif;
 	color: #333;
 }
+
+    .time-entry-pane, div.timegrid {
+        /* for scrolling */
+        height:100%;
+    }
+
+    .timegrid .scroll-container {
+        height: 100%;
+        overflow-y: auto;
+    }
 
 	.timegrid table {
 		width: 100%;
@@ -141,7 +151,7 @@ div.timegrid {
 			border-left-color: black;
 		}
 		
-		.timegrid tbody th {
+		.timegrid tbody th, .timegrid thead th:first-child {
 			text-align: right;
 			width: 4.2em;
 		}
@@ -149,6 +159,10 @@ div.timegrid {
 	.timegrid th, .timegrid td {
 		border: 1px solid black;
 	}
+
+    .timegrid tbody tr {
+        height: 40px;
+    }
 	
 	.timegrid td {
 		position: relative;
@@ -224,14 +238,14 @@ div.timegrid {
 	
 			.timegrid .start {
 				border-left-style: solid;
-				border-top-left-radius: .5em;
-				border-bottom-left-radius: .5em;
+				border-top-left-radius: 1em;
+				border-bottom-left-radius: 1em;
 			}
 	
 			.timegrid .end {
 				border-right-style: solid;
-				border-top-right-radius: .5em;
-				border-bottom-right-radius: .5em;
+				border-top-right-radius: 1em;
+				border-bottom-right-radius: 1em;
 			}
 
             .timegrid .time-bar.selected {
@@ -256,95 +270,48 @@ div.timegrid {
         .timegrid .mark.end-of-day {
             background-color: rgb(30, 198, 80);
         }
-			
-div.timelist {
-	width: 300px;
-	font-family: sans-serif;
-	color: black;
-}
 
-	.timelist .timeentry {
-		border: 1px solid black;
-		border-radius: .4em;
-		padding: .2em .4em;
-		margin: 0 0 .1em 0;
-        font-size: 80%;
-        position: relative;
-        opacity: .8;
-	}
-
-    .timelist .timeentry.selected {
-        border-width: 1px 2px 2px 1px;
-        opacity: 1;
+    .timegrid .jira-create-worklog {
+        font-size: 90%;
+        text-decoration: none;
+        color: black;
+        font-weight: normal;
     }
 
-        .dijitMenuItem .task,
-        .timelist .timeentry .task {
-            display: block;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-
-        .dijitMenuItem .task {
-            font-size: 80%;
-        }
-
-            .dijitMenuItem .code,
-            .timelist .timeentry .code {
-                font-weight: bold;
-                padding-right: .2em;
-            }
-
-            .dijitMenuItem .name,
-            .timelist .timeentry .name {
-                font-style: italic;
-            }
-
-        .timelist .top-right {
-            position: absolute;
-            top: 3px;
-            right: 3px;
-        }
-
-        .timelist .bottom-right {
-            position: absolute;
-            bottom: 3px;
-            right: 3px;
-        }
-
-            .timelist .menu-button img {
-                vertical-align: bottom;
-            }
-
-        .timelist .jira-create-worklog {
-            font-size: 90%;
-            text-decoration: none;
-            color: black;
+        .timegrid .jira-create-worklog .check {
+            font-weight: bold;
             text-shadow: 1px 2px black;
         }
 
-            .timelist .jira-create-worklog:visited {
-                color: white;
-            }
+        .timegrid .jira-create-worklog:visited .check {
+            color: white;
+        }
 
-            .timelist .jira-create-worklog img {
-                height: 1em;
-                width: 1em;
-            }
+        .timegrid .jira-create-worklog img {
+            height: 1em;
+            width: 1em;
+        }
 
-		.timelist .timeentry .note .dijitTextArea {
-            width: 90%;
-		}
-		
-		.timelist .timeentry input.key {
-			font-weight: bold;
-		}
-	
-		.timelist .timeentry textarea.note {
-			width: 100%;
-		}
+div.time-entry-details {
+    border: 1px solid black;
+    padding: 5px;
+    display: none;
+}
+    div.time-entry-details.open {
+        display: block;
+    }
 
+    div.time-entry-details .unlink-area {
+        display: none;
+    }
+
+        div.time-entry-details .unlink-area.show {
+            display: block;
+        }
+        
+        div.time-entry-details .linked-entry-date {
+            font-weight: bold;
+        }
 
 div.dayslist {
     float: left;
@@ -355,7 +322,7 @@ div.timegrid {
     margin-left: .5em;
 }
 
-div.timelist {
+div.time-entry-details {
 	float: left;
 	margin-left: .5em;
 }

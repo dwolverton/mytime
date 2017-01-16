@@ -4,16 +4,18 @@
  * Available under MIT license <https://raw.githubusercontent.com/dwolverton/my/master/LICENSE.txt>
  */
 define([
-    "dojo/_base/declare",
+    "dojo/_base/declare", "dojo/_base/lang",
     "mytime/model/modelRegistry", "mytime/model/TimeEntry",
     "mytime/command/CreateTimeEntryCommand", "mytime/command/UpdateTimeEntryCommand",
     "mytime/command/DeleteTimeEntryCommand",
+    "mytime/rest/PutEntryRequest", "mytime/rest/DeleteEntryRequest",
     "mytime/controller/_CrudController",
     "mytime/util/syncFrom"
 ], function(
-    declare,
+    declare, lang,
     modelRegistry, TimeEntry,
     CreateTimeEntryCommand, UpdateTimeEntryCommand, DeleteTimeEntryCommand,
+    PutEntryRequest, DeleteEntryRequest,
     _CrudController,
     syncFrom
 ) {
@@ -32,7 +34,8 @@ define([
         objectTypeStringForMessages: "time entry",
         storageKey: "timeEntryStore",
 
-        constructor: function() {
+        constructor: function(args) {
+            lang.mixin(this, args);
             this.own( syncFrom(modelRegistry, "timeEntryStore", this, "store") );
         },
 
@@ -56,6 +59,18 @@ define([
                 entry.endHour = swap;
             }
             return true;
+        },
+
+        _afterCreate: function(command, entry) {
+            //this.requestQueue.push(new PutEntryRequest(entry));
+        },
+
+        _afterUpdate: function(command, entry) {
+            //this.requestQueue.push(new PutEntryRequest(entry));
+        },
+
+        _afterDelete: function(command, entry) {
+            //this.requestQueue.push(new DeleteEntryRequest(entry));
         }
     });
 

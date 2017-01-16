@@ -8,12 +8,14 @@ define([
     "mytime/model/modelRegistry", "mytime/model/Task",
     "mytime/command/CreateTaskCommand", "mytime/command/UpdateTaskCommand",
     "mytime/command/DeleteTaskCommand",
+    "mytime/rest/PutTaskRequest", "mytime/rest/DeleteTaskRequest",
     "mytime/controller/_CrudController",
     "mytime/util/syncFrom", "mytime/util/ColorGenerator"
 ], function(
     lang, declare, when,
     modelRegistry, Task,
     CreateTaskCommand, UpdateTaskCommand, DeleteTaskCommand,
+    PutTaskRequest, DeleteTaskRequest,
     _CrudController,
     syncFrom, ColorGenerator
 ) {
@@ -35,8 +37,10 @@ define([
         colorGenerator: null,
 
         timeEntryStore: null,
+        requestQueue: null,
 
-        constructor: function() {
+        constructor: function(args) {
+            lang.mixin(this, args);
             this.colorGenerator = new ColorGenerator();
             this.own( syncFrom(modelRegistry, "taskStore", this, "store") );
             this.own( syncFrom(modelRegistry, "timeEntryStore", this) );
@@ -61,6 +65,18 @@ define([
                     this.timeEntryStore.put(timeEntry);
                 }, this);
             }));
+        },
+
+        _afterCreate: function(command, task) {
+            //this.requestQueue.push(new PutTaskRequest(task));
+        },
+
+        _afterUpdate: function(command, task) {
+            //this.requestQueue.push(new PutTaskRequest(task));
+        },
+
+        _afterDelete: function(command, task) {
+            //this.requestQueue.push(new DeleteTaskRequest(task));
         }
     });
 
